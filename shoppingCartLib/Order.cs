@@ -1,27 +1,30 @@
 ﻿using shoppingCartLib;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace ShoppingCartLib
 {
     class Order : INotifyPropertyChanged
     {
+        private static int orderNumber = 0;
 
-        private ObservableCollection<ShoppingCartItem> shoppingCartList;
+        private ObservableCollection<Item> shoppingCartList;
         private double netPrice;
         private double taxPrice;
         private double totalPrice;
+        private double discountedTotalPrice;
+        private Coupon coupon;
+ 
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal ObservableCollection<ShoppingCartItem> ShoppingCartList
+        internal ObservableCollection<Item> ShoppingCartList
         {
             get
             {
@@ -40,7 +43,8 @@ namespace ShoppingCartLib
                 OnPropertyChanged("TaxPrice");
                 // Call OnPropertyChanged whenever the property is updated
                 OnPropertyChanged("TotalPrice");
-
+                // Call OnPropertyChanged whenever the property is updated
+                OnPropertyChanged("DiscountedTotalPrice");
             }
         }
 
@@ -48,7 +52,7 @@ namespace ShoppingCartLib
         {
             get
             {
-                return this.ShoppingCartList.Sum(item => item.TotalPrice);
+                return CalculateNetPrice();
             }
 
             set
@@ -76,7 +80,7 @@ namespace ShoppingCartLib
         {
             get
             {
-                return this.NetPrice + this.TaxPrice;
+                return this.NetPrice + this.TaxPrice-this.DiscountedTotalPrice;
             }
 
             set
@@ -86,20 +90,47 @@ namespace ShoppingCartLib
             }
         }
 
-        public ShoppingCartItem SearchByItem(Item item)
+        public double DiscountedTotalPrice
         {
-            if (item != null)
+            get
             {
-
-
-                var result = from ShoppingCartItem in ShoppingCartList where ShoppingCartItem.Id.Equals(item.Id) select ShoppingCartItem;
-                return result.FirstOrDefault();
+                return CalculateDiscountedTotalPrice();
             }
-            else return null;
+
+            set
+            {
+                discountedTotalPrice = value;
+            }
+        }
+
+        public string OrderNumber
+        {
+            get
+            {
+                return  DateTime.Now.Date.ToString("ddMMyyyy") + "0000000"+orderNumber;
+            }
+
+        }
+
+        public Coupon Coupon
+        {
+            get
+            {
+                return coupon;
+            }
+
+            set
+            {
+                coupon = value;
+            }
         }
 
 
-        public void IncrementQuantityByOne(ShoppingCartItem item)
+
+
+
+
+        public void IncrementQuantityByOne(Item item)
         {
             if (item != null)
             {
@@ -124,7 +155,7 @@ namespace ShoppingCartLib
 
         }
 
-        public void DecrementQuantityByOne(ShoppingCartItem item)
+        public void DecrementQuantityByOne(Item item)
         {
             if (item != null)
             {
@@ -148,12 +179,12 @@ namespace ShoppingCartLib
 
         }
 
-        public void RemoveItem(ShoppingCartItem item)
+        public void RemoveItem(Item item)
         {
             if (item != null)
             {
                 item.Quantity = 0;
-                this.shoppingCartList.Remove(item);
+                shoppingCartList.Remove(item);
             }
 
 
@@ -169,15 +200,17 @@ namespace ShoppingCartLib
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (ShoppingCartItem item in ShoppingCartList)
+            sb.AppendLine("Order No.: "+OrderNumber);
+            sb.AppendLine();
+            foreach (Item item in ShoppingCartList)
             {
                 sb.AppendLine(item.ToString());
             }
             sb.AppendLine();
-            sb.AppendLine();
-            sb.AppendLine("Netprice:" + NetPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
-            sb.AppendLine("Tax:" + TaxPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
-            sb.AppendLine("TotalPrice:" + TotalPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
+            sb.AppendLine("Netprice: " + NetPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
+            sb.AppendLine("Tax: " + TaxPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
+            sb.AppendLine("Discount: -" + DiscountedTotalPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
+            sb.AppendLine("TotalPrice: " + TotalPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
 
             return sb.ToString();
         }
@@ -186,8 +219,8 @@ namespace ShoppingCartLib
 
         public Order()
         {
-            shoppingCartList = new ObservableCollection<ShoppingCartItem>();
-
+            shoppingCartList = new ObservableCollection<Item>();
+            orderNumber++;
         }
 
 
@@ -202,8 +235,76 @@ namespace ShoppingCartLib
             return this.shoppingCartList.Sum(item => item.TaxPrice);
         }
 
+        public double CalculateDiscountedTotalPrice()
+        {
+            return this.shoppingCartList.Sum(item => item.DiscountedTotalPrice);
+        }
 
+        public void SaveOrderToFile(string filePath)
+        {
+            XDocument xdoc = null;
+            XElement itemsElement = new XElement("Items");
+            foreach (var item in this.ShoppingCartList)
+            {
+                XElement itemElement = new XElement("Item",
+                                                new XElement("ID", item.Id),
+                                                new XElement("Name", item.Name),
+                                                new XElement("UnitPrice", item.UnitPrice),
+                                                new XElement("TaxPercentage", item.TaxPercentage),
+                                                new XElement("Category", item.Category),
+                                                new XElement("DiscountPercentage", item.DiscountPercentage),
+                                                new XElement("Quantity", item.Quantity),
+                                                new XElement("TotalPrice", item.TotalPrice)
+                                                );
+                itemsElement.Add(itemElement);
+            }
+            XElement orderElement = new XElement("Order",
+                                   new XElement("OrderNumber", OrderNumber),
+                                   new XElement("NetPrice", NetPrice),
+                                   new XElement("TaxPrice", TaxPrice),
+                                   new XElement("DiscountedTotalPrice", DiscountedTotalPrice),
+                                   new XElement("TotalPrice", TotalPrice),
+                                   itemsElement
+                                   );
 
+            // Save to an existing xml file
+            if (File.Exists(filePath + "\\ordersData.xml"))
+            {
+                // Load the xml file
+                xdoc = XDocument.Load(filePath + "\\ordersData.xml");
+
+                // Check if xml file's format is right 
+                if (xdoc.Root.Name.LocalName.Equals("Orders")) { 
+
+                // Add element to xml file
+                xdoc.Descendants("Orders").FirstOrDefault().AddFirst(orderElement);
+            }
+                else
+                {
+                    // Write XML file
+                    xdoc = new XDocument(new XElement("Orders"));
+                    //  xdoc.Add(itemElement);
+                    xdoc.Root.AddFirst(orderElement);
+                }
+            }
+            else
+            {
+                // Write XML file
+                    xdoc = new XDocument(new XElement("Orders"));
+                //  xdoc.Add(itemElement);
+                    xdoc.Root.AddFirst(orderElement);
+
+            }
+            try
+            {
+                xdoc.Save (filePath + "\\ordersData.xml");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
+        }
 
 
 

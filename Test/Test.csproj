@@ -102,60 +102,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="image\0000000001.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000002.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000003.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000004.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000005.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000006.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000007.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000008.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000009.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000010.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000011.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000012.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000013.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000014.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000015.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000016.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\0000000017.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="image\test.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="screenshot.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

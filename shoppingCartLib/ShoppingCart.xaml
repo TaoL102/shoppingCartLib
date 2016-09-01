@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:shoppingCartLib"
              mc:Ignorable="d" 
              
-             MinHeight="500" MinWidth="900">
+             Height="500" MinWidth="900">
 
 
     <!--Style-->
@@ -30,7 +30,7 @@
     <Grid Style="{StaticResource UserControlStyle}">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="400" />
+            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
 
@@ -61,11 +61,11 @@
             </Grid>
 
             <Border Grid.Row="0" Margin="0,0,0,10" Style="{StaticResource Style_Container}" Background="Transparent" >
-                <ListBox Name="CategoryListBox" Style="{StaticResource CategoryListBoxStyle}" >
+                <ListBox Name="ListBox_DisplayCategory" Style="{StaticResource CategoryListBoxStyle}" >
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Name="Border_Category" Height="50"  BorderThickness="0,0,1,0"  BorderBrush="{StaticResource Color_Border}" Background="{StaticResource Color_Content_Title_Background}" >
-                                <TextBlock Text="{Binding Path=Category}"  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="5,0,5,0" Foreground="White"></TextBlock>
+                                <TextBlock Text="{Binding Path=Category}"  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="15,0,15,0" Foreground="White"></TextBlock>
                             </Border>
 
                             <DataTemplate.Triggers>
@@ -101,37 +101,43 @@
             <Border Grid.Row="1" Style="{StaticResource Style_Container}">
 
 
-                <ListBox Name="ItemListBox" Style="{StaticResource ItemListBoxStyle}" >
+                <ListBox Name="ListBox_DisplayItems" Style="{StaticResource ItemListBoxStyle}" >
                     <ListBox.ItemTemplate>
                         <DataTemplate >
-                            <Border Style="{StaticResource Style_Container}" Background="White"  Width="120" Height="120" ToolTip="{Binding Path=Name}">
+                            <Border Style="{StaticResource Style_Container}" Background="White"  Width="130" Height="160" ToolTip="{Binding Path=Name}">
                                 <Grid>
-
-                                    <Image  Source="{Binding Path=PicUrl}"  Width="100" Height="100" Stretch="UniformToFill" VerticalAlignment="Top" Margin="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="100"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Image Grid.Row="0" Grid.RowSpan="2" Source="{Binding Path=PicUrl}"  Width="130" Height="120" Stretch="UniformToFill" VerticalAlignment="Top">
 
                                     </Image>
-                                    <Border Panel.ZIndex="1" Background="Gray" Width="35" Height="17" CornerRadius="5" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="5" Padding="0">
-                                        <WrapPanel>
-                                            <TextBlock  Text="{Binding Path=UnitPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}" FontSize="10"  Padding="0,2,2,2"></TextBlock>
-                                        </WrapPanel>
-                                    </Border>
-                                    <Border Panel.ZIndex="1" Margin="2,85,2,0" Padding="2,2,2,2" Background="White" >
-                                        <TextBlock  Text="{Binding Path=Name}" FontSize="10" TextWrapping="WrapWithOverflow" LineStackingStrategy="BlockLineHeight"  LineHeight="9" ></TextBlock>
+        
+                                        <TextBlock  Grid.Row="1" Text="{Binding Path=UnitPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}" FontSize="15"  Padding="0,2,2,2"></TextBlock>
+                                
+                                  
+                                        <TextBlock  Grid.Row="2" Padding="2" VerticalAlignment="Center" Text="{Binding Path=Name}" FontSize="15" TextWrapping="Wrap" LineStackingStrategy="BlockLineHeight" LineHeight="17"></TextBlock>
 
-                                    </Border>
+                                   
 
-                                    <Grid Name="ItemControl" Panel.ZIndex="3" Visibility="Collapsed" Background="{StaticResource Color_Content_Selected}">
+                                    <Grid Name="ItemControl" Panel.ZIndex="2" Height="120" Grid.RowSpan="2" Visibility="Collapsed" Background="White">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="40"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="40"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="65"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0"   Height="40" Width="40" Style="{StaticResource Style_Btn_Dec}"  MouseLeftButtonDown="BtnDecrementByOne_MouseLeftButtonDown">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="60"></RowDefinition>
+                                            <RowDefinition Height="60"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Text="{Binding Path=Quantity,StringFormat= 'Qty: \{0}'}"  VerticalAlignment="Center" TextAlignment="Center" FontSize="30"/>
+
+                                        <Border Grid.Column="0" Grid.Row="1"  Height="60" Width="65" Style="{StaticResource Style_Btn_Dec}"  MouseLeftButtonDown="BtnDecrementByOne_MouseLeftButtonDown">
                                             <TextBlock Text="－" FontSize="30" TextAlignment="Center" VerticalAlignment="Center"/>
 
                                         </Border>
-                                        <TextBlock Grid.Column="1" Text="{Binding Path=Quantity}"  VerticalAlignment="Center" TextAlignment="Center" FontSize="30"/>
-                                        <Border  Grid.Column="2"  Style="{StaticResource Style_Btn_Inc}" Height="40" Width="40"  MouseLeftButtonDown="BtnIncrementByOne_MouseLeftButtonDown">
+                                        <Border  Grid.Column="2"  Grid.Row="1"  Style="{StaticResource Style_Btn_Inc}" Height="60" Width="65"  MouseLeftButtonDown="BtnIncrementByOne_MouseLeftButtonDown">
                                             <TextBlock Text="＋" FontSize="30"  TextAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
 
@@ -164,7 +170,7 @@
             </Border>
 
         </Grid>
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Name="gridOrderDetails">
 
             <Grid Margin="10" >
                 <!--<ListView Name="ShoppingCartListView" Style="{StaticResource ShoppingCartStyle}">
@@ -186,16 +192,17 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="50"></RowDefinition>
                             <RowDefinition Height="50"></RowDefinition>
+                            <RowDefinition Height="50"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Border Grid.Row="0" Background="{StaticResource Color_Content_Title_Background}">
                             <Grid VerticalAlignment="Center" Margin="10">
-                                <TextBlock Style="{StaticResource Style_Content_Title}" Text="Order: #" ></TextBlock>
+                                <TextBlock Style="{StaticResource Style_Content_Title}" Text="{Binding Path=OrderNumber,StringFormat= 'Order: #\{0}'}" ></TextBlock>
 
                             </Grid>
                         </Border>
 
 
-                        <ListBox Name="listboxShoppingCart" Grid.Row="1" Style="{StaticResource Style_ShoppingCart}" HorizontalContentAlignment="Stretch" PreviewMouseDown="listboxShoppingCart_MouseDown">
+                        <ListBox Name="ListBox_ItemsInOrder" Grid.Row="1" Style="{StaticResource Style_ShoppingCart}" HorizontalContentAlignment="Stretch" PreviewMouseDown="ListBox_ItemsInOrder_PreviewMouseDown">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource Color_Border}" Height="50" >
@@ -207,10 +214,17 @@
                                                     <ColumnDefinition Width="30"/>
                                                     <ColumnDefinition Width="60"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Text="{Binding Path=Name}"  VerticalAlignment="Center" TextAlignment="Left" TextWrapping="Wrap" Margin="10,0,0,0" />
-                                                <TextBlock Grid.Column="1"  Text="{Binding Path=UnitPrice,StringFormat={} {0:C}}"  VerticalAlignment="Center" TextAlignment="Right"/>
-                                                <TextBlock Grid.Column="2"  Text="{Binding Path=Quantity,StringFormat= '*\{0}'}"  VerticalAlignment="Center" TextAlignment="Left"/>
-                                                <TextBlock Grid.Column="3"  Text="{Binding Path=TotalPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}"  VerticalAlignment="Center" TextAlignment="Left"/>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Grid.Column="0" Grid.RowSpan="2" Text="{Binding Path=Name}"  VerticalAlignment="Center" TextAlignment="Left" TextWrapping="Wrap" Margin="10,0,0,0" />
+                                                <TextBlock Grid.Column="1" Grid.RowSpan="2" Name="txbUnitPrice" Text="{Binding Path=UnitPrice,StringFormat={} {0:C}}"  VerticalAlignment="Center" TextAlignment="Right"/>
+                                                <TextBlock Grid.Column="2" Grid.RowSpan="2" Name="txbQuantity"  Text="{Binding Path=Quantity,StringFormat= '*\{0}'}"  VerticalAlignment="Center" TextAlignment="Left"/>
+                                                <TextBlock Grid.Column="3" Grid.RowSpan="2" Name="txbTotalPrice" Text="{Binding Path=TotalPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}"  VerticalAlignment="Center" TextAlignment="Left"></TextBlock>
+                                                <TextBlock Grid.Column="1" Grid.Row="1" Name="txbDiscount" Visibility="Collapsed" Text="Disc.:" VerticalAlignment="Top" TextAlignment="Right"/>
+                                                <TextBlock Grid.Column="2" Grid.Row="1" Name="txbDiscountPercentage" Visibility="Collapsed"  Text="{Binding Path=DiscountPercentage,StringFormat= '\{0}\%'}" VerticalAlignment="Top" TextAlignment="Left"/>
+                                                <TextBlock Grid.Column="3" Grid.Row="1" Name="txbDiscountedTotalPrice"  Visibility="Collapsed" Text="{Binding Path=DiscountedTotalPrice, ConverterCulture='en-NZ',StringFormat= '-\{0:C}'}" VerticalAlignment="Top" TextAlignment="Left"/>
 
                                             </Grid>
                                             <Grid  Name="ShoppingCartItemControl" Panel.ZIndex="1" Visibility="Collapsed">
@@ -247,6 +261,19 @@
                                             <Setter TargetName="ShoppingCartItemControl" Property="Visibility" Value="Visible"/>
 
                                         </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding IsDiscountApplied}" Value="True">
+                                            <Setter TargetName="txbUnitPrice" Property="Grid.RowSpan" Value="1"/>
+                                            <Setter TargetName="txbUnitPrice" Property="VerticalAlignment" Value="Bottom"/>
+                                            <Setter TargetName="txbQuantity" Property="Grid.RowSpan" Value="1"/>
+                                            <Setter TargetName="txbQuantity" Property="VerticalAlignment" Value="Bottom"/>
+                                            <Setter TargetName="txbTotalPrice" Property="Grid.RowSpan" Value="1"/>
+                                            <Setter TargetName="txbTotalPrice" Property="VerticalAlignment" Value="Bottom"/>
+                                            <Setter TargetName="txbDiscount" Property="Visibility" Value="Visible"></Setter>
+                                            <Setter TargetName="txbDiscountPercentage" Property="Visibility" Value="Visible"></Setter>
+                                            <Setter TargetName="txbDiscountedTotalPrice" Property="Visibility" Value="Visible"></Setter>
+
+                                        </DataTrigger>
                                     </DataTemplate.Triggers>
                                 </DataTemplate>
 
@@ -266,30 +293,53 @@
                             <Grid  Name="GridCalculation" >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="60" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="60" />
                                     <ColumnDefinition Width="50" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="25"></RowDefinition>
-                                    <RowDefinition  Height="25"></RowDefinition>
+                                    <RowDefinition Height="17"></RowDefinition>
+                                    <RowDefinition  Height="17"></RowDefinition>
+                                    <RowDefinition  Height="17"></RowDefinition>
+
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top"  Text="Subtotal:"></TextBlock>
-                                <TextBlock Grid.Column="1"  Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top"  Text="{Binding Path=NetPrice,ConverterCulture='en-NZ', StringFormat={} {0:C}}"></TextBlock>
-                                <TextBlock Grid.Column="0"  Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom"  Text="Tax:"></TextBlock>
+                                <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"  Text="Subtotal: "></TextBlock>
+                                <TextBlock Grid.Column="1"  Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Text="{Binding Path=NetPrice,ConverterCulture='en-NZ', StringFormat={} {0:C}}"></TextBlock>
+                                <TextBlock Grid.Column="0"  Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom"  Text="Tax: "></TextBlock>
                                 <TextBlock Grid.Column="1"  Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Bottom"  Text="{Binding Path=TaxPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}"></TextBlock>
-                                <TextBlock Grid.Column="2"  Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center"  FontSize="20" Grid.RowSpan="2" Text="Total:"></TextBlock>
-                                <Viewbox Grid.Column="3"  Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0">
+                                <TextBlock Grid.Column="0"  Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top"  Text="Discount: "></TextBlock>
+                                <TextBlock Grid.Column="1"  Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top"  Text="{Binding Path=DiscountedTotalPrice, ConverterCulture='en-NZ', StringFormat= '-\{0:C}'}"></TextBlock>
+                                <TextBlock Grid.Column="2"  Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center"  FontSize="20" Grid.RowSpan="3" Text="Total:"></TextBlock>
+                                <Viewbox Grid.Column="3"  Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0">
                                     <TextBlock Text="{Binding Path=TotalPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}"></TextBlock>
 
                                 </Viewbox>
+                                <TextBlock Grid.Column="3" Grid.Row="1" Name="txbOrderDiscountedTotalPrice"  Visibility="Collapsed" Text="{Binding Path=DiscountedTotalPrice, ConverterCulture='en-NZ',StringFormat= '-\{0:C}'}" VerticalAlignment="Top" TextAlignment="Left"/>
 
 
                             </Grid>
                         </Border>
 
                         <Border Grid.Row="3" BorderBrush="{StaticResource Color_Border}" BorderThickness="0,1,0,0">
+                            <Grid >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox Grid.Column="0" Name="TxtBox_Coupon" Style="{StaticResource Style_TxtBox_Coupon}" BorderThickness="1" BorderBrush="{StaticResource Color_Border}"  Margin="0">
+
+
+                                </TextBox>
+                                <Label  Grid.Column="1" Name="Btn_Coupon" Content="APPLY COUPON" Height="50"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource Style_Btn_Pay}" Foreground="White" MouseLeftButtonDown="Btn_Coupon_MouseLeftButtonDown"  Margin="0" ></Label>
+
+
+                            </Grid>
+                        </Border>
+
+
+                        <Border Grid.Row="4" BorderBrush="{StaticResource Color_Border}" BorderThickness="0,1,0,0">
                             <Grid >
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="27*"/>
@@ -327,12 +377,12 @@
                     </Grid.RowDefinitions>
                     <Border Grid.Row="0" Background="{StaticResource Color_Content_Title_Background}">
                         <Grid VerticalAlignment="Center" Margin="10">
-                            <TextBlock  x:Name="txtBlock_MsgBox_Title" Style="{StaticResource Style_Content_Title}" Text="PAY" />
+                            <TextBlock  x:Name="txtBlock_MsgBox_Title" Style="{StaticResource Style_Content_Title}" />
 
                         </Grid>
                     </Border>
                     <ScrollViewer Grid.Row="1">
-                        <TextBlock x:Name="txtBlock_MsgBox_Content" TextWrapping="Wrap" Margin="10"/>
+                        <TextBlock x:Name="txtBlock_MsgBox_Content" TextWrapping="Wrap" VerticalAlignment="Center" Margin="10" FontSize="15"/>
 
                     </ScrollViewer>
                     <Grid Grid.Row="2">
@@ -341,8 +391,8 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Label x:Name="Btn_MsgBox_Yes" Grid.Column="0" Content="No" Height="25" Margin="30,0,30,0" HorizontalContentAlignment="Center" Background="{StaticResource Color_SearchBtn}" Foreground="White" MouseLeftButtonDown="Btn_MsgBox_Yes_MouseLeftButtonDown"/>
-                        <Label x:Name="Btn_MsgBox_No" Grid.Column="1" Content="Yes" Height="25" Margin="30,0,30,0" HorizontalContentAlignment="Center" Background="{StaticResource Color_Btn_Pay}" Foreground="White" MouseLeftButtonDown="Btn_MsgBox_No_MouseLeftButtonDown"/>
+                        <Label x:Name="Btn_MsgBox_No" Grid.Column="0" Content="No" Height="50"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Style="{StaticResource Style_Btn_Cancel}" MouseLeftButtonDown="Btn_MsgBox_No_MouseLeftButtonDown"/>
+                        <Label x:Name="Btn_MsgBox_Yes" Grid.Column="1" Content="Yes" Height="50"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Style="{StaticResource Style_Btn_Pay}" MouseLeftButtonDown="Btn_MsgBox_Yes_MouseLeftButtonDown"/>
 
 
                     </Grid>
@@ -352,6 +402,12 @@
 
             </Border>
         </Grid>
+
+
+
+        
+        
     </Grid>
+
 
 </UserControl>

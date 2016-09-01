@@ -319,8 +319,32 @@
 
     </Style>
 
+    <Style x:Key="Style_TxtBox_Coupon" TargetType="{x:Type TextBox}">
+        <!--<Setter Property="Text" Value="Item Code/Name"></Setter>-->
+        <!--<Setter Property="Background" Value="White" />-->
+        <Setter Property="HorizontalContentAlignment"  Value="Left" />
+        <Setter Property="VerticalContentAlignment"  Value="Center" />
+        <!--<Setter Property="BorderThickness" Value="2"></Setter>-->
+        <Setter Property="FontSize" Value="25"></Setter>
+        <Setter Property="Text" Value="Coupon"/>
+        <Setter Property="Padding" Value="10"></Setter>
+        <Style.Triggers>
+            <Trigger Property="IsFocused"  Value="True">
+                <Setter Property="Text" Value="{x:Null}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="#F8B963"/>
+
+            </Trigger>
+
+        </Style.Triggers>
+
+
+    </Style>
+
     <Style x:Key="Style_Btn_Inc" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource Color_Btn_Inc}"></Setter>
+        
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Color_Item_Mouse_Over}"></Setter>
@@ -349,6 +373,7 @@
 
     <Style x:Key="Style_Btn_Pay" TargetType="Label">
         <Setter Property="Background" Value="{StaticResource Color_Btn_Inc}"></Setter>
+        <Setter Property="FontSize" Value="15"></Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Color_Item_Mouse_Over}"></Setter>
@@ -358,6 +383,8 @@
 
     <Style x:Key="Style_Btn_Cancel" TargetType="Label">
         <Setter Property="Background" Value="{StaticResource Color_Btn_Inc}"></Setter>
+        <Setter Property="FontSize" Value="15"></Setter>
+
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Color_Caution}"></Setter>
@@ -367,6 +394,8 @@
 
     <Style x:Key="Style_Btn_Clear_Filter" TargetType="Label">
         <Setter Property="Background" Value="{StaticResource Color_Btn_Inc}"></Setter>
+        <Setter Property="FontSize" Value="15"></Setter>
+
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Color_Item_Mouse_Over}"></Setter>
