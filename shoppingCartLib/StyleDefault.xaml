@@ -20,15 +20,11 @@
     <SolidColorBrush x:Key="Color_Item_Mouse_Over" Color="#80D8FF"></SolidColorBrush>
     <SolidColorBrush x:Key="Color_Caution" Color="#FB7487"></SolidColorBrush>
 
-
     <VisualBrush x:Key="HelpBrush" TileMode="None" Stretch="None"  AlignmentX="Left">
         <VisualBrush.Visual>
             <Label Background="White" FontSize="30" Foreground="LightBlue" Content="Item Code/Name"/>
         </VisualBrush.Visual>
     </VisualBrush>
-
-
-
 
     <!--Scrollbar Thumbs-->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
@@ -144,8 +140,6 @@
         <Setter Property="Background" Value="{StaticResource Color_Content_Background}"></Setter>
     </Style>
 
-
-
     <Style x:Key="BaseLabel" TargetType="{x:Type Label}">
         <Setter Property="Foreground" Value="{StaticResource Color_Base_Font}" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -171,8 +165,6 @@
 
     </Style>
 
-
-
     <Style x:Key="ItemListBoxStyle" TargetType="ListBox">
         <Setter Property="Template">
             <Setter.Value>
@@ -183,8 +175,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-
-
     </Style>
 
     <Style x:Key="Style_ShoppingCart" TargetType="ListBox">
@@ -198,59 +188,14 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-
-
     </Style>
 
 
     <Style x:Key="ShoppingCartStyle" TargetType="ListView">
 
-        <!--<Setter Property="GridView.ColumnHeaderContainerStyle">
-            <Setter.Value>
-                <Style TargetType="GridViewColumnHeader">
-
-                    <Setter Property="FrameworkElement.Visibility" Value="Collapsed"/>
-
-                    <Setter Property="Background" Value="Wheat" />
-                    <Setter Property="Height" Value="40"></Setter>
-                    <Setter Property="FontSize" Value="40"></Setter>
-                </Style>
-            </Setter.Value>
-        </Setter>-->
-
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-
-
-
                 <Style TargetType="ListViewItem">
-                    <!--<Setter Property="Template">
-                <Setter.Value>
-                     -->
-                    <!--Trun off default selection-->
-                    <!--
-                    <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        -->
-                    <!--<Border x:Name="Bd" BorderBrush="Gray" BorderThickness="0,1,0,1" 
-                            Background="{TemplateBinding Background}" 
-                            Padding="{TemplateBinding Padding}" 
-                            SnapsToDevicePixels="true">
-                            <ContentPresenter 
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        </Border>-->
-                    <!--
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Foreground"
-                                    Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>-->
-
                     <Setter Property="Height" Value="25"></Setter>
                     <Setter Property="FontSize" Value="20"></Setter>
                     <Setter Property="Padding"  Value="5"></Setter>
@@ -264,16 +209,11 @@
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter Property="Background" Value="LightGray"/>
                         </Trigger>
-
-
-
                     </Style.Triggers>
                 </Style>
             </Setter.Value>
         </Setter>
     </Style>
-
-
 
     <Style x:Key="BaseTextBlock" TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{StaticResource Color_Base_Font}" />
@@ -290,11 +230,8 @@
     </Style>
 
     <Style x:Key="SearchBox" TargetType="{x:Type TextBox}">
-        <!--<Setter Property="Text" Value="Item Code/Name"></Setter>-->
-        <!--<Setter Property="Background" Value="White" />-->
         <Setter Property="HorizontalContentAlignment"  Value="Left" />
         <Setter Property="VerticalContentAlignment"  Value="Center" />
-        <!--<Setter Property="BorderThickness" Value="2"></Setter>-->
         <Setter Property="FontSize" Value="25"></Setter>
         <Setter Property="Text" Value="Search"/>
         <Style.Triggers>
@@ -303,11 +240,8 @@
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderBrush" Value="#F8B963"/>
-
             </Trigger>
-
         </Style.Triggers>
-
 
     </Style>
     <Style x:Key="SearchBoxBorder" TargetType="{x:Type Border}">
@@ -316,15 +250,11 @@
         <Setter Property="CornerRadius" Value="10"></Setter>
         <Setter Property="BorderBrush" Value="{StaticResource Color_Border}"></Setter>
         <Setter Property="Background" Value="{StaticResource Color_Content_Title_Background}"></Setter>
-
     </Style>
 
     <Style x:Key="Style_TxtBox_Coupon" TargetType="{x:Type TextBox}">
-        <!--<Setter Property="Text" Value="Item Code/Name"></Setter>-->
-        <!--<Setter Property="Background" Value="White" />-->
         <Setter Property="HorizontalContentAlignment"  Value="Left" />
         <Setter Property="VerticalContentAlignment"  Value="Center" />
-        <!--<Setter Property="BorderThickness" Value="2"></Setter>-->
         <Setter Property="FontSize" Value="25"></Setter>
         <Setter Property="Text" Value="Coupon"/>
         <Setter Property="Padding" Value="10"></Setter>
@@ -334,17 +264,13 @@
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderBrush" Value="#F8B963"/>
-
             </Trigger>
-
         </Style.Triggers>
-
-
     </Style>
 
     <Style x:Key="Style_Btn_Inc" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource Color_Btn_Inc}"></Setter>
-        
+
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Color_Item_Mouse_Over}"></Setter>
@@ -369,7 +295,6 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-
 
     <Style x:Key="Style_Btn_Pay" TargetType="Label">
         <Setter Property="Background" Value="{StaticResource Color_Btn_Inc}"></Setter>

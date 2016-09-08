@@ -10,203 +10,88 @@ using System.Xml.Linq;
 
 namespace ShoppingCartLib
 {
-    class Order : INotifyPropertyChanged
+    /// <summary>
+    /// This is the Order Model for the control;
+    /// Author: Tao Liu
+    /// Date: 21/08/2016
+    /// </summary>
+    internal class Order : INotifyPropertyChanged
     {
-        private static int orderNumber = 0;
+        #region Fields
 
-        private ObservableCollection<Item> shoppingCartList;
-        private double netPrice;
-        private double taxPrice;
-        private double totalPrice;
-        private double discountedTotalPrice;
-        private Coupon coupon;
- 
+        private static int _orderNumber;
+        private ObservableCollection<Item> _cartItemList;
 
+        // Reference: How to: Implement Property Change Notification, https://msdn.microsoft.com/en-us/library/ms743695(v=vs.110).aspx
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal ObservableCollection<Item> ShoppingCartList
+        #endregion
+
+        #region Properties
+
+        public double NetPrice => CalculateNetPrice();
+        public double TaxPrice => CalculateTaxPrice();
+        public double TotalPrice => NetPrice + TaxPrice - DiscountedTotalPrice;
+        public double DiscountedTotalPrice => CalculateDiscountedTotalPrice();
+        public string OrderNumber => DateTime.Now.Date.ToString("ddMMyyyy") + "0000000" + _orderNumber;
+        public Coupon Coupon { get; set; }
+        internal ObservableCollection<Item> CartItemList
         {
             get
             {
-
-                return shoppingCartList;
+                return _cartItemList;
             }
-
             set
             {
-                shoppingCartList = value;
+                _cartItemList = value;
+
                 // Call OnPropertyChanged whenever the property is updated
-                OnPropertyChanged("ShoppingCartList");
-                // Call OnPropertyChanged whenever the property is updated
+                // Reference: How to: Implement Property Change Notification, https://msdn.microsoft.com/en-us/library/ms743695(v=vs.110).aspx
+                OnPropertyChanged("CartItemList");
                 OnPropertyChanged("NetPrice");
-                // Call OnPropertyChanged whenever the property is updated
                 OnPropertyChanged("TaxPrice");
-                // Call OnPropertyChanged whenever the property is updated
                 OnPropertyChanged("TotalPrice");
-                // Call OnPropertyChanged whenever the property is updated
                 OnPropertyChanged("DiscountedTotalPrice");
             }
         }
 
-        public double NetPrice
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Order()
         {
-            get
-            {
-                return CalculateNetPrice();
-            }
-
-            set
-            {
-                netPrice = value;
-
-            }
-        }
-
-        public double TaxPrice
-        {
-            get
-            {
-                return this.CalculateTaxPrice();
-            }
-
-            set
-            {
-                taxPrice = value;
-
-            }
-        }
-
-        public double TotalPrice
-        {
-            get
-            {
-                return this.NetPrice + this.TaxPrice-this.DiscountedTotalPrice;
-            }
-
-            set
-            {
-                totalPrice = value;
-
-            }
-        }
-
-        public double DiscountedTotalPrice
-        {
-            get
-            {
-                return CalculateDiscountedTotalPrice();
-            }
-
-            set
-            {
-                discountedTotalPrice = value;
-            }
-        }
-
-        public string OrderNumber
-        {
-            get
-            {
-                return  DateTime.Now.Date.ToString("ddMMyyyy") + "0000000"+orderNumber;
-            }
-
-        }
-
-        public Coupon Coupon
-        {
-            get
-            {
-                return coupon;
-            }
-
-            set
-            {
-                coupon = value;
-            }
+            // Initialize a list for store items in cart
+            _cartItemList = new ObservableCollection<Item>();
+            // Increment the static field _orderNumber by one to generate order number
+            _orderNumber++;
         }
 
 
-
-
-
-
-        public void IncrementQuantityByOne(Item item)
-        {
-            if (item != null)
-            {
-
-
-
-                if (item.Quantity > 0)
-                {
-                    item.Quantity++;
-
-                }
-                else
-                {
-                    item.Quantity++;
-                    this.ShoppingCartList.Add(item);
-                }
-
-
-
-            }
-
-
-        }
-
-        public void DecrementQuantityByOne(Item item)
-        {
-            if (item != null)
-            {
-
-
-                if (item.Quantity > 1)
-                {
-                    item.Quantity--;
-
-                }
-                else if (item.Quantity == 1)
-                {
-                    item.Quantity--;
-                    this.ShoppingCartList.Remove(item);
-                }
-
-
-
-
-            }
-
-        }
-
-        public void RemoveItem(Item item)
-        {
-            if (item != null)
-            {
-                item.Quantity = 0;
-                shoppingCartList.Remove(item);
-            }
-
-
-        }
-
-        public void RemoveAllItem()
-        {
-            ShoppingCartList.All(item => { item.Quantity = 0; return true; });
-            ShoppingCartList.Clear();
-        }
-
-
+        /// <summary>
+        /// Overide the ToString() method;
+        /// To generate the details(Receipt) of this order;
+        /// </summary>
+        /// <returns>A string description for this order</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Order No.: "+OrderNumber);
+
+            // Order Number
+            sb.AppendLine("Order No.: " + OrderNumber);
             sb.AppendLine();
-            foreach (Item item in ShoppingCartList)
+
+            // Order items
+            foreach (Item item in CartItemList)
             {
                 sb.AppendLine(item.ToString());
             }
             sb.AppendLine();
+
+            // Price, tax and discount for the order
             sb.AppendLine("Netprice: " + NetPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
             sb.AppendLine("Tax: " + TaxPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
             sb.AppendLine("Discount: -" + DiscountedTotalPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")));
@@ -215,36 +100,112 @@ namespace ShoppingCartLib
             return sb.ToString();
         }
 
-
-
-        public Order()
+        /// <summary>
+        /// Increment the quantity of an item in the order by one
+        /// </summary>
+        /// <param name="item">Item</param>
+        public void IncrementQuantityByOne(Item item)
         {
-            shoppingCartList = new ObservableCollection<Item>();
-            orderNumber++;
+            if (item == null) return;
+
+            // If quantity is greater than 0, increment by one
+            if (item.Quantity > 0)
+            {
+                item.Quantity++;
+            }
+
+            // If not, increment by one and add the item to the item list
+            else
+            {
+                item.Quantity++;
+                CartItemList.Add(item);
+            }
         }
 
+        /// <summary>
+        /// Decrement the quantity of an item in the order by one
+        /// </summary>
+        /// <param name="item">Item</param>
+        public void DecrementQuantityByOne(Item item)
+        {
+            if (item == null) return;
 
+            // If quantity is greate than 1, decrement by one
+            if (item.Quantity > 1)
+            {
+                item.Quantity--;
+            }
 
+            // If not, remove it from item list
+            else 
+            {
+                this.RemoveItem(item);
+            }
+        }
+
+        /// <summary>
+        /// Remove an item from the item list of cart
+        /// </summary>
+        /// <param name="item">Item</param>
+        public void RemoveItem(Item item)
+        {
+            if (item == null) return;
+
+            // Set the quantity to 0, remove it from the list
+            item.Quantity = 0;
+            _cartItemList.Remove(item);
+        }
+
+        /// <summary>
+        /// Remove all items from the item list of cart
+        /// </summary>
+        public void RemoveAllItem()
+        {
+            CartItemList.All(item =>
+            {
+                item.Quantity = 0;
+                return true;
+            });
+            CartItemList.Clear();
+        }
+
+        /// <summary>
+        /// Calcute the net price for this order
+        /// </summary>
+        /// <returns>Net price of the order</returns>
         public double CalculateNetPrice()
         {
-            return this.ShoppingCartList.Sum(item => item.TotalPrice);
+            return CartItemList.Sum(item => item.TotalPrice);
         }
 
+        /// <summary>
+        /// Calcute the tax for this order
+        /// </summary>
+        /// <returns>Tax of the order</returns>
         public double CalculateTaxPrice()
         {
-            return this.shoppingCartList.Sum(item => item.TaxPrice);
+            return _cartItemList.Sum(item => item.TaxPrice);
         }
 
+        /// <summary>
+        /// Calcute the discounted total price for this order
+        /// </summary>
+        /// <returns>Discounted total price of the order</returns>
         public double CalculateDiscountedTotalPrice()
         {
-            return this.shoppingCartList.Sum(item => item.DiscountedTotalPrice);
+            return _cartItemList.Sum(item => item.DiscountedTotalPrice);
         }
 
+        /// <summary>
+        /// Save order to external XML file
+        /// Reference: XElement Class, https://msdn.microsoft.com/en-us/library/system.xml.linq.xelement(v=vs.110).aspx
+        /// </summary>
+        /// <param name="filePath">File path</param>
         public void SaveOrderToFile(string filePath)
         {
             XDocument xdoc = null;
             XElement itemsElement = new XElement("Items");
-            foreach (var item in this.ShoppingCartList)
+            foreach (var item in this.CartItemList)
             {
                 XElement itemElement = new XElement("Item",
                                                 new XElement("ID", item.Id),
@@ -274,11 +235,12 @@ namespace ShoppingCartLib
                 xdoc = XDocument.Load(filePath + "\\ordersData.xml");
 
                 // Check if xml file's format is right 
-                if (xdoc.Root.Name.LocalName.Equals("Orders")) { 
+                if (xdoc.Root.Name.LocalName.Equals("Orders"))
+                {
 
-                // Add element to xml file
-                xdoc.Descendants("Orders").FirstOrDefault().AddFirst(orderElement);
-            }
+                    // Add element to xml file
+                    xdoc.Descendants("Orders").FirstOrDefault().AddFirst(orderElement);
+                }
                 else
                 {
                     // Write XML file
@@ -290,29 +252,34 @@ namespace ShoppingCartLib
             else
             {
                 // Write XML file
-                    xdoc = new XDocument(new XElement("Orders"));
+                xdoc = new XDocument(new XElement("Orders"));
                 //  xdoc.Add(itemElement);
-                    xdoc.Root.AddFirst(orderElement);
-
+                xdoc.Root.AddFirst(orderElement);
             }
             try
             {
-                xdoc.Save (filePath + "\\ordersData.xml");
+                xdoc.Save(filePath + "\\ordersData.xml");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            
         }
 
+        #endregion
 
+        #region Events
 
-        // Create the OnPropertyChanged method to raise the event
+        /// <summary>
+        /// Create the OnPropertyChanged method to raise the event
+        /// Reference: How to: Implement Property Change Notification, https://msdn.microsoft.com/en-us/library/ms743695(v=vs.110).aspx
+        /// </summary>
+        /// <param name="name">Property name</param>
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
         }
+
+        #endregion
     }
 }

@@ -5,83 +5,62 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:shoppingCartLib"
              mc:Ignorable="d" 
-             
              Height="500" MinWidth="900">
 
 
-    <!--Style-->
+    <!--Style Resource-->
     <UserControl.Resources>
         <ResourceDictionary>
-
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="StyleDefault.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-
-
         </ResourceDictionary>
-
-
     </UserControl.Resources>
-
-
 
     <!--Layout-->
     <Grid Style="{StaticResource UserControlStyle}">
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="300" />
         </Grid.ColumnDefinitions>
-
-
         <Grid Grid.Column="0" Margin="10">
             <Grid.RowDefinitions>
-
                 <RowDefinition MinHeight="50" MaxHeight="80"/>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="60" />
-
             </Grid.RowDefinitions>
-            <!--<Grid>
-                <Label Style="{StaticResource BaseLabel}" Content="Category:"></Label>
-            </Grid>-->
-
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition Width="160"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBox Grid.Column="0" Name="SearchBox" Style="{StaticResource SearchBox}" BorderThickness="1" BorderBrush="{StaticResource Color_Border}" TextChanged="SearchBox_TextChanged"  Margin="0,10,0,0">
-
-
+                
+                <!--Text box search-->
+                <TextBox Grid.Column="0" Name="txtBox_Search" Style="{StaticResource SearchBox}" BorderThickness="1" BorderBrush="{StaticResource Color_Border}" TextChanged="TxtBox_Search_OnTextChanged"  Margin="0,10,0,0">
                 </TextBox>
+                
+                <!--Clear Search button--> 
                 <Label Grid.Column="1" Name="Btn_Clear_Search" Content="CLEAR FILTER" Height="50" Margin="10,10,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource Style_Btn_Clear_Filter}" Foreground="White" MouseLeftButtonDown="Btn_Clear_Search_MouseLeftButtonDown"></Label>
-
             </Grid>
-
             <Border Grid.Row="0" Margin="0,0,0,10" Style="{StaticResource Style_Container}" Background="Transparent" >
+           
+                <!--Category display list box-->
                 <ListBox Name="ListBox_DisplayCategory" Style="{StaticResource CategoryListBoxStyle}" >
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Name="Border_Category" Height="50"  BorderThickness="0,0,1,0"  BorderBrush="{StaticResource Color_Border}" Background="{StaticResource Color_Content_Title_Background}" >
                                 <TextBlock Text="{Binding Path=Category}"  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="15,0,15,0" Foreground="White"></TextBlock>
                             </Border>
-
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True">
                                     <Setter TargetName="Border_Category" Property="Background" Value="{StaticResource Color_Category_Selected_Hover}"/>
-
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True">
                                     <Setter TargetName="Border_Category" Property="Background" Value="{StaticResource Color_Category_Selected_Hover}"/>
-
                                 </DataTrigger>
                             </DataTemplate.Triggers>
                         </DataTemplate>
-
                     </ListBox.ItemTemplate>
-
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <EventSetter Event="PreviewMouseLeftButtonDown" Handler="CategoryListBox_ItemSelected"></EventSetter>
@@ -89,18 +68,13 @@
                             <Setter Property="BorderThickness" Value="0"></Setter>
                             <Setter Property="Height" Value="50"></Setter>
                             <Setter Property="VerticalAlignment" Value="Top"></Setter>
-                            <Style.Triggers>
-
-                            </Style.Triggers>
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
             </Border>
-
-
             <Border Grid.Row="1" Style="{StaticResource Style_Container}">
-
-
+                
+                <!--Items list box-->
                 <ListBox Name="ListBox_DisplayItems" Style="{StaticResource ItemListBoxStyle}" >
                     <ListBox.ItemTemplate>
                         <DataTemplate >
@@ -112,16 +86,9 @@
                                         <RowDefinition Height="40"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <Image Grid.Row="0" Grid.RowSpan="2" Source="{Binding Path=PicUrl}"  Width="130" Height="120" Stretch="UniformToFill" VerticalAlignment="Top">
-
                                     </Image>
-        
-                                        <TextBlock  Grid.Row="1" Text="{Binding Path=UnitPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}" FontSize="15"  Padding="0,2,2,2"></TextBlock>
-                                
-                                  
-                                        <TextBlock  Grid.Row="2" Padding="2" VerticalAlignment="Center" Text="{Binding Path=Name}" FontSize="15" TextWrapping="Wrap" LineStackingStrategy="BlockLineHeight" LineHeight="17"></TextBlock>
-
-                                   
-
+                                    <TextBlock  Grid.Row="1" Text="{Binding Path=UnitPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}" FontSize="15"  Padding="0,2,2,2"></TextBlock>
+                                    <TextBlock  Grid.Row="2" Padding="2" VerticalAlignment="Center" Text="{Binding Path=Name}" FontSize="15" TextWrapping="Wrap" LineStackingStrategy="BlockLineHeight" LineHeight="17"></TextBlock>
                                     <Grid Name="ItemControl" Panel.ZIndex="2" Height="120" Grid.RowSpan="2" Visibility="Collapsed" Background="White">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="65"/>
@@ -132,59 +99,35 @@
                                             <RowDefinition Height="60"></RowDefinition>
                                         </Grid.RowDefinitions>
                                         <TextBlock Grid.ColumnSpan="2" Grid.Row="0" Text="{Binding Path=Quantity,StringFormat= 'Qty: \{0}'}"  VerticalAlignment="Center" TextAlignment="Center" FontSize="30"/>
-
                                         <Border Grid.Column="0" Grid.Row="1"  Height="60" Width="65" Style="{StaticResource Style_Btn_Dec}"  MouseLeftButtonDown="BtnDecrementByOne_MouseLeftButtonDown">
                                             <TextBlock Text="－" FontSize="30" TextAlignment="Center" VerticalAlignment="Center"/>
-
                                         </Border>
                                         <Border  Grid.Column="2"  Grid.Row="1"  Style="{StaticResource Style_Btn_Inc}" Height="60" Width="65"  MouseLeftButtonDown="BtnIncrementByOne_MouseLeftButtonDown">
                                             <TextBlock Text="＋" FontSize="30"  TextAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
-
                                     </Grid>
-
                                 </Grid>
-
-
                             </Border>
-
                             <DataTemplate.Triggers>
                                 <DataTrigger Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True">
                                     <Setter TargetName="ItemControl" Property="Visibility" Value="Visible"/>
-
                                 </DataTrigger>
                             </DataTemplate.Triggers>
-
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}">
                             <Setter Property="Padding" Value="0"></Setter>
                             <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ItemListBox_ItemSelected" />
-                            <!--<Setter Property="Padding" Value="0"></Setter>
-                            <Setter Property="BorderThickness" Value="0"></Setter>-->
                         </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
-
             </Border>
-
         </Grid>
-        <Grid Grid.Column="1" Name="gridOrderDetails">
-
+        
+        <!--Order display area-->
+        <Grid Grid.Column="1" Name="grid_OrderDetails">
             <Grid Margin="10" >
-                <!--<ListView Name="ShoppingCartListView" Style="{StaticResource ShoppingCartStyle}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Width="50" Header="Qty" DisplayMemberBinding="{Binding Path=Quantity}" ></GridViewColumn>
-                            <GridViewColumn Width="300" Header="Item" DisplayMemberBinding="{Binding Path=Name}"></GridViewColumn>
-                            <GridViewColumn Width="80"  Header="UnitPrice" DisplayMemberBinding="{Binding Path=UnitPrice , ConverterCulture='en-NZ', StringFormat={} {0:C}}"></GridViewColumn>
-                            <GridViewColumn Width="100"  Header="Price" DisplayMemberBinding="{Binding Path=TotalPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}"></GridViewColumn>
-                        </GridView>
-
-                    </ListView.View>
-                </ListView>-->
-
                 <Border Name="ShoppingCartContainer" Style="{StaticResource Style_Container}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -197,12 +140,11 @@
                         <Border Grid.Row="0" Background="{StaticResource Color_Content_Title_Background}">
                             <Grid VerticalAlignment="Center" Margin="10">
                                 <TextBlock Style="{StaticResource Style_Content_Title}" Text="{Binding Path=OrderNumber,StringFormat= 'Order: #\{0}'}" ></TextBlock>
-
                             </Grid>
                         </Border>
-
-
-                        <ListBox Name="ListBox_ItemsInOrder" Grid.Row="1" Style="{StaticResource Style_ShoppingCart}" HorizontalContentAlignment="Stretch" PreviewMouseDown="ListBox_ItemsInOrder_PreviewMouseDown">
+                        
+                        <!--order items list box-->
+                        <ListBox Name="ListBox_ItemsInOrder" Grid.Row="1" Style="{StaticResource Style_ShoppingCart}" HorizontalContentAlignment="Stretch" >
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource Color_Border}" Height="50" >
@@ -225,8 +167,9 @@
                                                 <TextBlock Grid.Column="1" Grid.Row="1" Name="txbDiscount" Visibility="Collapsed" Text="Disc.:" VerticalAlignment="Top" TextAlignment="Right"/>
                                                 <TextBlock Grid.Column="2" Grid.Row="1" Name="txbDiscountPercentage" Visibility="Collapsed"  Text="{Binding Path=DiscountPercentage,StringFormat= '\{0}\%'}" VerticalAlignment="Top" TextAlignment="Left"/>
                                                 <TextBlock Grid.Column="3" Grid.Row="1" Name="txbDiscountedTotalPrice"  Visibility="Collapsed" Text="{Binding Path=DiscountedTotalPrice, ConverterCulture='en-NZ',StringFormat= '-\{0:C}'}" VerticalAlignment="Top" TextAlignment="Left"/>
-
                                             </Grid>
+                                            
+                                            <!--cart item click control-->
                                             <Grid  Name="ShoppingCartItemControl" Panel.ZIndex="1" Visibility="Collapsed">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="150"></ColumnDefinition>
@@ -238,11 +181,9 @@
                                                         <ColumnDefinition Width="50"/>
                                                         <ColumnDefinition Width="50"/>
                                                         <ColumnDefinition Width="50"/>
-
                                                     </Grid.ColumnDefinitions>
                                                     <Border Grid.Column="0" Style="{StaticResource Style_Btn_Dec}"  Height="50" Width="50" MouseLeftButtonDown="BtnDecrementByOne_MouseLeftButtonDown">
                                                         <TextBlock Text="－" FontSize="30" TextAlignment="Center" VerticalAlignment="Center" />
-
                                                     </Border>
                                                     <Border  Grid.Column="1" Style="{StaticResource Style_Btn_Inc}" Height="50" Width="50"  MouseLeftButtonDown="BtnIncrementByOne_MouseLeftButtonDown">
                                                         <TextBlock Text="＋" FontSize="30"  TextAlignment="Center" VerticalAlignment="Center"/>
@@ -253,15 +194,11 @@
                                                 </Grid>
                                             </Grid>
                                         </Grid>
-
                                     </Border>
-
                                     <DataTemplate.Triggers>
                                         <DataTrigger Binding="{Binding Path=IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True">
                                             <Setter TargetName="ShoppingCartItemControl" Property="Visibility" Value="Visible"/>
-
                                         </DataTrigger>
-
                                         <DataTrigger Binding="{Binding IsDiscountApplied}" Value="True">
                                             <Setter TargetName="txbUnitPrice" Property="Grid.RowSpan" Value="1"/>
                                             <Setter TargetName="txbUnitPrice" Property="VerticalAlignment" Value="Bottom"/>
@@ -272,24 +209,21 @@
                                             <Setter TargetName="txbDiscount" Property="Visibility" Value="Visible"></Setter>
                                             <Setter TargetName="txbDiscountPercentage" Property="Visibility" Value="Visible"></Setter>
                                             <Setter TargetName="txbDiscountedTotalPrice" Property="Visibility" Value="Visible"></Setter>
-
                                         </DataTrigger>
                                     </DataTemplate.Triggers>
                                 </DataTemplate>
-
                             </ListBox.ItemTemplate>
-
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="{x:Type ListBoxItem}">
                                     <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ItemListBox_ItemSelected" />
-
                                     <Setter Property="Padding" Value="0"></Setter>
                                     <Setter Property="BorderThickness" Value="0"></Setter>
                                 </Style>
                             </ListBox.ItemContainerStyle>
                         </ListBox>
-
                         <Border Grid.Row="2" BorderBrush="{StaticResource Color_Border}" BorderThickness="0,1,0,0">
+                            
+                            <!--Order price display area-->
                             <Grid  Name="GridCalculation" >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="60" />
@@ -301,9 +235,7 @@
                                     <RowDefinition Height="17"></RowDefinition>
                                     <RowDefinition  Height="17"></RowDefinition>
                                     <RowDefinition  Height="17"></RowDefinition>
-
                                 </Grid.RowDefinitions>
-
                                 <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"  Text="Subtotal: "></TextBlock>
                                 <TextBlock Grid.Column="1"  Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"  Text="{Binding Path=NetPrice,ConverterCulture='en-NZ', StringFormat={} {0:C}}"></TextBlock>
                                 <TextBlock Grid.Column="0"  Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom"  Text="Tax: "></TextBlock>
@@ -313,32 +245,25 @@
                                 <TextBlock Grid.Column="2"  Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center"  FontSize="20" Grid.RowSpan="3" Text="Total:"></TextBlock>
                                 <Viewbox Grid.Column="3"  Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,5,0">
                                     <TextBlock Text="{Binding Path=TotalPrice, ConverterCulture='en-NZ', StringFormat={} {0:C}}"></TextBlock>
-
                                 </Viewbox>
                                 <TextBlock Grid.Column="3" Grid.Row="1" Name="txbOrderDiscountedTotalPrice"  Visibility="Collapsed" Text="{Binding Path=DiscountedTotalPrice, ConverterCulture='en-NZ',StringFormat= '-\{0:C}'}" VerticalAlignment="Top" TextAlignment="Left"/>
-
-
                             </Grid>
                         </Border>
-
                         <Border Grid.Row="3" BorderBrush="{StaticResource Color_Border}" BorderThickness="0,1,0,0">
                             <Grid >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-
+                                
+                                <!--text box coupon-->
                                 <TextBox Grid.Column="0" Name="TxtBox_Coupon" Style="{StaticResource Style_TxtBox_Coupon}" BorderThickness="1" BorderBrush="{StaticResource Color_Border}"  Margin="0">
-
-
                                 </TextBox>
+                                
+                                <!--Apply coupon buttoon--> 
                                 <Label  Grid.Column="1" Name="Btn_Coupon" Content="APPLY COUPON" Height="50"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource Style_Btn_Pay}" Foreground="White" MouseLeftButtonDown="Btn_Coupon_MouseLeftButtonDown"  Margin="0" ></Label>
-
-
                             </Grid>
                         </Border>
-
-
                         <Border Grid.Row="4" BorderBrush="{StaticResource Color_Border}" BorderThickness="0,1,0,0">
                             <Grid >
                                 <Grid.RowDefinitions>
@@ -349,25 +274,21 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-
+                                
+                                <!--Cancel button--> 
                                 <Label Name="Btn_Cancel" Grid.Column="0" Content="CANCEL" Height="50" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource Style_Btn_Cancel}" Foreground="White" MouseLeftButtonDown="Btn_Cancel_MouseLeftButtonDown" Grid.ColumnSpan="2" Margin="0,0,139,-0.666" Grid.RowSpan="2"></Label>
+                                
+                                <!--Pay button--> 
                                 <Label Name="Btn_Pay" Grid.Column="1" Content="PAY" Height="50"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Style="{StaticResource Style_Btn_Pay}" Foreground="White" MouseLeftButtonDown="Btn_Pay_MouseLeftButtonDown" Margin="0.333,0,0,-0.666" Grid.RowSpan="2"></Label>
-
-
                             </Grid>
                         </Border>
-
                     </Grid>
                 </Border>
-
-
-
             </Grid>
-
         </Grid>
+        
+        <!--Popup message box-->
         <Grid  Name="Grid_MsgBox"  Panel.ZIndex="1" Grid.ColumnSpan="2" Background="{StaticResource Color_Background}" Visibility="Collapsed">
-
-
             <Border Width="250" MinHeight="200" MaxHeight="400" Style="{StaticResource Style_Container}" >
                 <Grid>
                     <Grid.RowDefinitions>
@@ -378,36 +299,21 @@
                     <Border Grid.Row="0" Background="{StaticResource Color_Content_Title_Background}">
                         <Grid VerticalAlignment="Center" Margin="10">
                             <TextBlock  x:Name="txtBlock_MsgBox_Title" Style="{StaticResource Style_Content_Title}" />
-
                         </Grid>
                     </Border>
                     <ScrollViewer Grid.Row="1">
                         <TextBlock x:Name="txtBlock_MsgBox_Content" TextWrapping="Wrap" VerticalAlignment="Center" Margin="10" FontSize="15"/>
-
                     </ScrollViewer>
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-
                         <Label x:Name="Btn_MsgBox_No" Grid.Column="0" Content="No" Height="50"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Style="{StaticResource Style_Btn_Cancel}" MouseLeftButtonDown="Btn_MsgBox_No_MouseLeftButtonDown"/>
                         <Label x:Name="Btn_MsgBox_Yes" Grid.Column="1" Content="Yes" Height="50"  HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="White" Style="{StaticResource Style_Btn_Pay}" MouseLeftButtonDown="Btn_MsgBox_Yes_MouseLeftButtonDown"/>
-
-
                     </Grid>
-
                 </Grid>
-
-
             </Border>
         </Grid>
-
-
-
-        
-        
     </Grid>
-
-
 </UserControl>

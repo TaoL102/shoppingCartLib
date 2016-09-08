@@ -1,99 +1,45 @@
 ﻿using System;
+using System.Text;
 
 namespace shoppingCartLib
 {
+    /// <summary>
+    /// This is the Coupon Model for the control;
+    /// Author: Tao Liu
+    /// Date: 21/08/2016
+    /// </summary>
     public class Coupon
     {
-        private string code;
-        private DateTime startDate;
-        private DateTime endDate;
-        private double discountPercentage;
-        private string applicableCategory;
-        private string applicableItemCode;
-        private bool isValid;
+        #region Fields
 
-        public string Code
-        {
-            get
-            {
-                return code;
-            }
+        private double _discountPercentage;
+        private bool _isValid;
 
-            set
-            {
-                code = value;
-            }
-        }
+        #endregion
 
-        public DateTime StartDate
-        {
-            get
-            {
-                return startDate;
-            }
+        #region Properties
 
-            set
-            {
-                startDate = value;
-            }
-        }
-
-        public DateTime EndDate
-        {
-            get
-            {
-                return endDate;
-            }
-
-            set
-            {
-                endDate = value;
-            }
-        }
-
+        public string Code { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string ApplicableCategory { get; set; }
+        public string ApplicableItemCode { get; set; }
         public double DiscountPercentage
         {
             get
             {
-                return discountPercentage;
+                return _discountPercentage;
             }
-
             set
             {
                 if (value >= 0 && value < 100)
                 {
-                    discountPercentage = value;
+                    _discountPercentage = value;
                 }
                 else
                 {
-                    discountPercentage = 100;
+                    _discountPercentage = 100;
                 }
-            }
-        }
-
-        public string ApplicableCategory
-        {
-            get
-            {
-                return applicableCategory;
-            }
-
-            set
-            {
-                applicableCategory = value;
-            }
-        }
-
-        public string ApplicableItemCode
-        {
-            get
-            {
-                return applicableItemCode;
-            }
-
-            set
-            {
-                applicableItemCode = value;
             }
         }
 
@@ -101,57 +47,80 @@ namespace shoppingCartLib
         {
             get
             {
+                // Get the current date
                 DateTime dateToday = DateTime.Now;
-                isValid = dateToday.Ticks > StartDate.Ticks && dateToday.Ticks < EndDate.Ticks; 
-                return isValid;
+
+                // Check if current date is between start date and end date
+                _isValid = (dateToday.Ticks > StartDate.Ticks ) && ( dateToday.Ticks < EndDate.Ticks);
+
+                return _isValid;
             }
         }
 
-        public Coupon(string code, DateTime d1, DateTime d2, double dis, string applicableCategory,string applicableItemCode) {
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="code">Coupon code</param>
+        /// <param name="startDate">Coupon start date</param>
+        /// <param name="endDate">Coupon end date</param>
+        /// <param name="disCount">Coupon discount percentage</param>
+        /// <param name="applicableCategory">Applicable category</param>
+        /// <param name="applicableItemCode">Applicable item</param>
+        public Coupon(string code, DateTime startDate, DateTime endDate, double disCount, string applicableCategory, string applicableItemCode)
+        {
             this.Code = code;
-            this.StartDate = d1;
-            this.EndDate = d2;
-            this.DiscountPercentage = dis;
+            this.StartDate = startDate;
+            this.EndDate = endDate;
+            this.DiscountPercentage = disCount;
             this.ApplicableCategory = applicableCategory;
             this.ApplicableItemCode = applicableItemCode;
         }
 
-
+        /// <summary>
+        /// Override the ToString() method;
+        /// To generate a message shows the details of this coupon,
+        /// including if it's valid during this period
+        /// </summary>
+        /// <returns>A string description of a coupon object</returns>
         public override string ToString()
         {
-            string message = "";
+            StringBuilder sb = new StringBuilder();
+
+            // Generate vadility info
+            // Invalid:
             if (!IsValid)
             {
-                message += "Coupon Code: " +
-        Code + "\nStart Date: " + StartDate + "\nStart Date: "
-        + EndDate+"\n";
-
-                message += "It's invalid now!";
+                sb.AppendLine("Coupon Code: " + Code);
+                sb.AppendLine("Start Date: " + StartDate);
+                sb.AppendLine("Start Date: " + EndDate);
+                sb.AppendLine("It's invalid now!");
             }
+
+            // Valid:
             else
             {
-                // string message
-                message = "Coupon Code: " +
-                        Code + "\n";
+                sb.AppendLine("Coupon Code: " + Code);
 
+                // Applicable category
                 if (!string.IsNullOrEmpty(ApplicableCategory))
                 {
-                    message += "Applicable Category:" +
-                        ApplicableCategory +
-                        "\nDiscount: " + DiscountPercentage + "%";
+                    sb.AppendLine("Applicable Category:" + ApplicableCategory);
+                    sb.AppendLine("Discount: " + DiscountPercentage + "%");
                 }
+
+                // Applicable items
                 else if (!string.IsNullOrEmpty(ApplicableItemCode))
                 {
-                    // Item item = SearchItemById(ApplicableItemCode);
-                    message += "Applicable Item:" +
-                        ApplicableItemCode +
-                        "\nDiscount: " + DiscountPercentage + "%";
+                    sb.AppendLine("Applicable Item:" + ApplicableItemCode);
+                    sb.AppendLine("Discount: " + DiscountPercentage + "%");
                 }
             }
-
-            
-            return message;
+            return sb.ToString();
         }
-
+        #endregion
     }
 }

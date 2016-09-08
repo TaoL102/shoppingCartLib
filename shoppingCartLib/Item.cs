@@ -4,59 +4,45 @@ using System.Globalization;
 
 namespace shoppingCartLib
 {
+    /// <summary>
+    /// This is the Item Model for the control;
+    /// Author: Tao Liu
+    /// Date: 21/08/2016
+    /// </summary>
     public class Item : Comparer<Item>, INotifyPropertyChanged
     {
 
-        // Fields
-        private int quantity;
-        private double totalPrice;
-        private string name;
-        private double unitPrice;
-        private double taxPrice;
-        private double taxPercentage;
-        private string category;
-        private string picUrl;
-        private string id;
-        private double discountPercentage;
-        private double discountedTotalPrice;
-        private bool isDiscountApplied;
+        #region Fields
 
+        private int _quantity;
+        private double _unitPrice;
+        private double _taxPercentage;
+        private double _discountPercentage;
+        private bool _isDiscountApplied;
 
+        // Reference: How to: Implement Property Change Notification, https://msdn.microsoft.com/en-us/library/ms743695(v=vs.110).aspx
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public override string ToString()
-        {
-            string unitPriceAndQuantity = UnitPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")) + "*" + Quantity;
-            string discount=IsDiscountApplied?( "Dis.:"+ DiscountPercentage+"%\t-"+ DiscountedTotalPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))):null;
-            string totalPrice = TotalPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"));
-            return Name + "\n" + unitPriceAndQuantity + "\t" + totalPrice + "\t"+ discount;
+        #endregion
 
+        #region Properties
 
-        }
-
-        public Item(string id, string name, double uniPrice, double taxPercentage, string category, string picUrl)
-        {
-            this.Id = id;
-            this.Name = name;
-            this.UnitPrice = uniPrice;
-            this.TaxPercentage = taxPercentage;
-            this.Category = category;
-            this.PicUrl = picUrl;
-            this.Quantity = 0;
-            this.isDiscountApplied = false;
-            this.DiscountPercentage = 0;
-        }
-
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Category { get; set; }
+        public string PicUrl { get; set; }
         public int Quantity
         {
             get
             {
-                return quantity;
+                return _quantity;
             }
 
             set
             {
-                quantity = value;
+                _quantity = value;
+
+                // Reference: How to: Implement Property Change Notification, https://msdn.microsoft.com/en-us/library/ms743695(v=vs.110).aspx
 
                 // Call OnPropertyChanged whenever the property is updated
                 OnPropertyChanged("Quantity");
@@ -69,132 +55,39 @@ namespace shoppingCartLib
             }
         }
 
-
-        public double TotalPrice
-        {
-            get
-            {
-
-                return UnitPrice * Quantity;
-
-            }
-
-            set
-            {
-                totalPrice = value;
-
-            }
-        }
-
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-
-            set
-            {
-                name = value;
-            }
-        }
-
         public double UnitPrice
         {
             get
-            {        
-                return unitPrice;
+            {
+                return _unitPrice;
             }
 
             protected set
             {
-                if (value >= 0)
-                {
-                    unitPrice = value;
-                }
-                else
-                {
-                    unitPrice = 0;
-                }
-
+                _unitPrice = value >= 0 ? value : 0;
             }
         }
 
+        public double TotalPrice => UnitPrice * Quantity;
 
-
-        public double TaxPrice
-        {
-            get
-            {
-
-                return TaxPercentage * TotalPrice * 0.01;
-            }
-
-            set
-            {
-                taxPrice = value;
-
-            }
-        }
-
+        public double TaxPrice => TaxPercentage * TotalPrice * 0.01;
 
         public double TaxPercentage
         {
             get
             {
-                return taxPercentage;
+                return _taxPercentage;
             }
-
             protected set
             {
                 if (value >= 0 && value <= 100)
                 {
-                    taxPercentage = value;
+                    _taxPercentage = value;
                 }
                 else
                 {
-                    taxPercentage = 100;
+                    _taxPercentage = 100;
                 }
-
-            }
-        }
-
-        public string Category
-        {
-            get
-            {
-                return category;
-            }
-
-            set
-            {
-                category = value;
-            }
-        }
-
-        public string PicUrl
-        {
-            get
-            {
-                return picUrl;
-            }
-
-            set
-            {
-                picUrl = value;
-            }
-        }
-
-        public string Id
-        {
-            get
-            {
-                return id;
-            }
-
-            set
-            {
-                id = value;
             }
         }
 
@@ -202,71 +95,109 @@ namespace shoppingCartLib
         {
             get
             {
-                return discountPercentage;
+                return _discountPercentage;
             }
-
             set
             {
                 if (value >= 0 && value < 100)
                 {
-                    discountPercentage = value;
+                    _discountPercentage = value;
                 }
                 else
                 {
-                    discountPercentage = 100;
+                    _discountPercentage = 100;
                 }
 
                 // Call OnPropertyChanged whenever the property is updated
                 OnPropertyChanged("DiscountPercentage");
-
             }
         }
 
-        public double DiscountedTotalPrice
-        {
-            get
-            {
-                return TotalPrice*(DiscountPercentage*0.01);
-            }
-
-            set
-            {
-                discountedTotalPrice = value;
-                // Call OnPropertyChanged whenever the property is updated
-                OnPropertyChanged("DiscountedTotalPrice");
-            }
-        }
+        public double DiscountedTotalPrice => TotalPrice * (DiscountPercentage * 0.01);
 
         public bool IsDiscountApplied
         {
             get
             {
-                return isDiscountApplied;
+                return _isDiscountApplied;
             }
-
             set
             {
-                isDiscountApplied = value;
-                
+                _isDiscountApplied = value;
+
                 // Call OnPropertyChanged whenever the property is updated
-            OnPropertyChanged("IsDiscountApplied");
+                OnPropertyChanged("IsDiscountApplied");
                 // Call OnPropertyChanged whenever the property is updated
                 OnPropertyChanged("DiscountedTotalPrice");
             }
-            
         }
 
+        #endregion
 
-        // Create the OnPropertyChanged method to raise the event
+        #region Methods
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="id">Item ID</param>
+        /// <param name="name">Item name</param>
+        /// <param name="uniPrice">Item unit price</param>
+        /// <param name="taxPercentage">Item tax percentage</param>
+        /// <param name="category">Item category</param>
+        /// <param name="picUrl">Picture Url</param>
+        public Item(string id, string name, double uniPrice, double taxPercentage, string category, string picUrl)
+        {
+            this.Id = id;
+            this.Name = name;
+            this.UnitPrice = uniPrice;
+            this.TaxPercentage = taxPercentage;
+            this.Category = category;
+            this.PicUrl = picUrl;
+            this.Quantity = 0;
+            this._isDiscountApplied = false;
+            this.DiscountPercentage = 0;
+        }
+
+        /// <summary>
+        /// Override the ToString() method;
+        /// To generate an item string description
+        /// </summary>
+        /// <returns>An string description of the item</returns>
+        public override string ToString()
+        {
+            string unitPriceAndQuantity = UnitPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ")) + "*" + Quantity;
+            string discount = IsDiscountApplied ? ("Dis.:" + DiscountPercentage + "%\t-" + DiscountedTotalPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))) : null;
+            string totalPrice = TotalPrice.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"));
+            return Name + "\n" + unitPriceAndQuantity + "\t" + totalPrice + "\t" + discount;
+        }
+
+        /// <summary>
+        /// Overide the Compare Method;
+        /// To compare the items by item ID;
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public override int Compare(Item x, Item y)
+        {
+            return x.Id.CompareTo(y.Id);
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Create the OnPropertyChanged method to raise the event
+        /// Reference: How to: Implement Property Change Notification, https://msdn.microsoft.com/en-us/library/ms743695(v=vs.110).aspx
+        /// </summary>
+        /// <param name="name"></param>
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        public override int Compare(Item x, Item y)
-        {
-            return x.Id.CompareTo(y.Id);
-        }
+        #endregion
     }
 }
 
