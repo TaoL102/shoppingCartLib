@@ -20,7 +20,7 @@ namespace ShoppingCartLib
         #region Fields
 
         private static int _orderNumber;
-        private ObservableCollection<Item> _cartItemList;
+        private ObservableCollection<OrderItem> _cartItemList;
 
         // Reference: How to: Implement Property Change Notification, https://msdn.microsoft.com/en-us/library/ms743695(v=vs.110).aspx
         public event PropertyChangedEventHandler PropertyChanged;
@@ -35,7 +35,7 @@ namespace ShoppingCartLib
         public double DiscountedTotalPrice => CalculateDiscountedTotalPrice();
         public string OrderNumber => DateTime.Now.Date.ToString("ddMMyyyy") + "0000000" + _orderNumber;
         public Coupon Coupon { get; set; }
-        internal ObservableCollection<Item> CartItemList
+        internal ObservableCollection<OrderItem> CartItemList
         {
             get
             {
@@ -65,7 +65,7 @@ namespace ShoppingCartLib
         public Order()
         {
             // Initialize a list for store items in cart
-            _cartItemList = new ObservableCollection<Item>();
+            _cartItemList = new ObservableCollection<OrderItem>();
             // Increment the static field _orderNumber by one to generate order number
             _orderNumber++;
         }
@@ -85,7 +85,7 @@ namespace ShoppingCartLib
             sb.AppendLine();
 
             // Order items
-            foreach (Item item in CartItemList)
+            foreach (OrderItem item in CartItemList)
             {
                 sb.AppendLine(item.ToString());
             }
@@ -101,72 +101,59 @@ namespace ShoppingCartLib
         }
 
         /// <summary>
-        /// Increment the quantity of an item in the order by one
+        /// Increment the quantity of an orderItem in the order by one
         /// </summary>
-        /// <param name="item">Item</param>
-        public void IncrementQuantityByOne(Item item)
+        /// <param name="orderItem">OrderItem</param>
+        public void IncrementQuantityByOne(OrderItem orderItem)
         {
-            if (item == null) return;
+            if (orderItem == null) return;
 
             // If quantity is greater than 0, increment by one
-            if (item.Quantity > 0)
+            if (orderItem.Quantity > 0)
             {
-                item.Quantity++;
+                orderItem.Quantity++;
             }
 
-            // If not, increment by one and add the item to the item list
+            // If not, increment by one and add the orderItem to the orderItem list
             else
             {
-                item.Quantity++;
-                CartItemList.Add(item);
+                orderItem.Quantity++;
+                CartItemList.Add(orderItem);
             }
         }
 
         /// <summary>
-        /// Decrement the quantity of an item in the order by one
+        /// Decrement the quantity of an orderItem in the order by one
         /// </summary>
-        /// <param name="item">Item</param>
-        public void DecrementQuantityByOne(Item item)
+        /// <param name="orderItem">OrderItem</param>
+        public void DecrementQuantityByOne(OrderItem orderItem)
         {
-            if (item == null) return;
+            if (orderItem == null) return;
 
             // If quantity is greate than 1, decrement by one
-            if (item.Quantity > 1)
+            if (orderItem.Quantity > 1)
             {
-                item.Quantity--;
+                orderItem.Quantity--;
             }
 
-            // If not, remove it from item list
+            // If not, remove it from orderItem list
             else 
             {
-                this.RemoveItem(item);
+                this.RemoveItem(orderItem);
             }
         }
 
         /// <summary>
-        /// Remove an item from the item list of cart
+        /// Remove an orderItem from the orderItem list of cart
         /// </summary>
-        /// <param name="item">Item</param>
-        public void RemoveItem(Item item)
+        /// <param name="orderItem">OrderItem</param>
+        public void RemoveItem(OrderItem orderItem)
         {
-            if (item == null) return;
+            if (orderItem == null) return;
 
             // Set the quantity to 0, remove it from the list
-            item.Quantity = 0;
-            _cartItemList.Remove(item);
-        }
-
-        /// <summary>
-        /// Remove all items from the item list of cart
-        /// </summary>
-        public void RemoveAllItem()
-        {
-            CartItemList.All(item =>
-            {
-                item.Quantity = 0;
-                return true;
-            });
-            CartItemList.Clear();
+            orderItem.Quantity = 0;
+            _cartItemList.Remove(orderItem);
         }
 
         /// <summary>
@@ -207,7 +194,7 @@ namespace ShoppingCartLib
             XElement itemsElement = new XElement("Items");
             foreach (var item in this.CartItemList)
             {
-                XElement itemElement = new XElement("Item",
+                XElement itemElement = new XElement("OrderItem",
                                                 new XElement("ID", item.Id),
                                                 new XElement("Name", item.Name),
                                                 new XElement("UnitPrice", item.UnitPrice),

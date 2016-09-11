@@ -22,7 +22,7 @@
 
     <VisualBrush x:Key="HelpBrush" TileMode="None" Stretch="None"  AlignmentX="Left">
         <VisualBrush.Visual>
-            <Label Background="White" FontSize="30" Foreground="LightBlue" Content="Item Code/Name"/>
+            <Label Background="White" FontSize="30" Foreground="LightBlue" Content="OrderItem Code/Name"/>
         </VisualBrush.Visual>
     </VisualBrush>
 
@@ -233,7 +233,7 @@
         <Setter Property="HorizontalContentAlignment"  Value="Left" />
         <Setter Property="VerticalContentAlignment"  Value="Center" />
         <Setter Property="FontSize" Value="25"></Setter>
-        <Setter Property="Text" Value="Search"/>
+        <Setter Property="Text" Value="Search by code/name"/>
         <Style.Triggers>
             <Trigger Property="IsFocused"  Value="True">
                 <Setter Property="Text" Value="{x:Null}"/>

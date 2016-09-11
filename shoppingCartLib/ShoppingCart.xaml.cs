@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -24,10 +25,10 @@ namespace shoppingCartLib
         Order order;
 
         // Observable Collection for the items in the display area
-        ObservableCollection<Item> collectionDisplayItems;
+        ObservableCollection<OrderItem> collectionDisplayItems;
 
         // List for the items from inputdata
-        List<Item> listInputItems;
+        List<OrderItem> listInputItems;
 
         // file path for external xml files( This is for temporiry use, in actural situations, this control will connect to database directly)
         public static string filePath;
@@ -60,11 +61,11 @@ namespace shoppingCartLib
             listInputItems = ReadDataFromXMLFile();
 
             // By default, show all items in the items display area
-            collectionDisplayItems = new ObservableCollection<Item>(listInputItems);
+            collectionDisplayItems = new ObservableCollection<OrderItem>(listInputItems);
 
             // Data Binding
             ListBox_DisplayItems.ItemsSource = collectionDisplayItems;
-            ListBox_DisplayCategory.ItemsSource = 
+            ListBox_DisplayCategory.ItemsSource =
                 listInputItems
                 .GroupBy(item => item.Category)
                 .Select(group => group.First())
@@ -78,9 +79,9 @@ namespace shoppingCartLib
         /// Reference: XElement Class, https://msdn.microsoft.com/en-us/library/system.xml.linq.xelement(v=vs.110).aspx
         /// </summary>
         /// <returns></returns>
-        private List<Item> ReadDataFromXMLFile()
+        private List<OrderItem> ReadDataFromXMLFile()
         {
-            List<Item> list = new List<Item>();
+            List<OrderItem> list = new List<OrderItem>();
 
             string itemsDataFilePath = filePath + "\\itemsData.xml";
 
@@ -91,7 +92,7 @@ namespace shoppingCartLib
             var items = from item in XElement.Load(itemsDataFilePath).Elements() select item;
             foreach (var item in items)
             {
-                Item i = new Item(item.Element("ID")?.Value,
+                OrderItem i = new OrderItem(item.Element("ID")?.Value,
                     item.Element("Name")?.Value,
                     Convert.ToDouble(item.Element("UnitPrice")?.Value),
                     Convert.ToInt32(item.Element("TaxPercentage")?.Value),
@@ -114,7 +115,7 @@ namespace shoppingCartLib
             if (!string.IsNullOrEmpty(order.Coupon.ApplicableCategory))
             {
                 // Get all items in this category
-                List<Item> items = SearchItemByCategory(order.Coupon.ApplicableCategory);
+                List<OrderItem> items = SearchItemByCategory(order.Coupon.ApplicableCategory);
 
                 // For each item, set the discount rate
                 items.ForEach(item =>
@@ -127,12 +128,12 @@ namespace shoppingCartLib
             // Otherwise, check if the coupon applies to a specific item
             else if (!string.IsNullOrEmpty(order.Coupon.ApplicableItemCode))
             {
-                // Get the applicable item
-                Item item = SearchItemById(order.Coupon.ApplicableItemCode);
+                // Get the applicable orderItem
+                OrderItem orderItem = SearchItemById(order.Coupon.ApplicableItemCode);
 
-                // Set the discount rate for this item
-                item.DiscountPercentage = order.Coupon.DiscountPercentage;
-                item.IsDiscountApplied = true;
+                // Set the discount rate for this orderItem
+                orderItem.DiscountPercentage = order.Coupon.DiscountPercentage;
+                orderItem.IsDiscountApplied = true;
             }
 
             // update the price grid
@@ -143,9 +144,9 @@ namespace shoppingCartLib
         /// <summary>
         /// Search item by item ID
         /// </summary>
-        /// <param name="id">Item ID</param>
-        /// <returns>Item</returns>
-        public Item SearchItemById(string id)
+        /// <param name="id">OrderItem ID</param>
+        /// <returns>OrderItem</returns>
+        public OrderItem SearchItemById(string id)
         {
             if (string.IsNullOrEmpty(id)) return null;
 
@@ -159,16 +160,42 @@ namespace shoppingCartLib
         /// Search items by item category
         /// </summary>
         /// <param name="category">Category</param>
-        /// <returns>Item list</returns>
-        public List<Item> SearchItemByCategory(string category)
+        /// <returns>OrderItem list</returns>
+        public List<OrderItem> SearchItemByCategory(string category)
         {
-            List<Item> items = new List<Item>();
+            List<OrderItem> items = new List<OrderItem>();
             if (string.IsNullOrEmpty(category)) return items;
 
             // search the database for the items which matches the category
             var result = collectionDisplayItems.Where(i => i.Category.ToLower().Equals(category.ToLower()));
 
             items = result.ToList();
+            return items;
+        }
+
+        /// <summary>
+        /// Search items by item Id or name
+        /// </summary>
+        /// <param name="searchTxt">Search Keyword</param>
+        public List<OrderItem> SearchItemsByIdOrName(string searchTxt)
+        {
+            List<OrderItem> items = new List<OrderItem>();
+
+            // If text is null, empty or white space, return all items
+            if (string.IsNullOrWhiteSpace(searchTxt) || searchTxt.Equals("Search by code/name"))
+            {
+                listInputItems.ForEach(item => items.Add(item));
+            }
+            // If not null, begin to search
+            else
+            {
+                // Query the database
+                var linqResut =
+                    listInputItems
+                        .Where(item => item.Name.ToLower().Contains(searchTxt.ToLower()) || item.Id.Equals(searchTxt));
+
+                items = linqResut.ToList();
+            }
             return items;
         }
 
@@ -207,48 +234,76 @@ namespace shoppingCartLib
             return coupon;
         }
 
+        /// <summary>
+        /// Validate coupon
+        /// </summary>
+        /// <param name="coupon">Coupon</param>
+        /// <returns>A string message of coupon</returns>
+        public string ValidateCoupon(Coupon coupon)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            // Generate vadility info
+            // Invalid:
+            if (!coupon.IsValid)
+            {
+                sb.AppendLine("Invalid Coupon");
+            }
+
+            // Valid:
+            else
+            {
+                sb.AppendLine("Valid Coupon");
+
+                // Applicable category
+                if (!string.IsNullOrEmpty(coupon.ApplicableCategory))
+                {
+                    sb.AppendLine("Applicable Category:" + coupon.ApplicableCategory);
+                }
+
+                // Applicable items
+                else if (!string.IsNullOrEmpty(coupon.ApplicableItemCode))
+                {
+                    // Find item name by id
+                    string itemName=SearchItemById(coupon.ApplicableItemCode).Name;
+                    sb.AppendLine("Applicable OrderItem: " + itemName);
+                }
+            }
+
+            sb.AppendLine(coupon.ToString());
+            return sb.ToString();
+        }
+
         #endregion
 
-        #region Events
+            #region Events
 
-        /// <summary>
-        /// Search Box Text Changed event handler
-        /// To query the database and display items
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+            /// <summary>
+            /// Search Box Text Changed event handler
+            /// To query the database and display items
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
         private void TxtBox_Search_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             // Not applicable when the control is loaded
             if (!IsLoaded) return;
 
             string txt = ((TextBox)sender).Text;
+            
+            // Call SearchItemsByIdOrName method
+            List<OrderItem> items = SearchItemsByIdOrName(txt);
 
-            // If text is null, empty or white space, show all items
-            if (string.IsNullOrWhiteSpace(txt))
-            {
-                collectionDisplayItems.Clear();
-                listInputItems.ForEach(item => collectionDisplayItems.Add(item));
-            }
+            // Clear the items already in the display area
+            collectionDisplayItems.Clear();
 
-            // If not null, begin to search
-            else if (txt != "Search")
-            {
-                // Query the database
-                var linqResut = 
-                    listInputItems
-                    .Where(item=> item.Name.ToLower().Contains(txt.ToLower()) || item.Id.Equals(txt));
+            // Add the search result to the display area
+            items.ForEach(item => collectionDisplayItems.Add(item));
 
-                // Clear the items already in the display area
-                collectionDisplayItems.Clear();
-
-                // Add the search result to the display area
-                linqResut.ToList().ForEach(item => collectionDisplayItems.Add(item));
-            }
         }
 
         /// <summary>
-        /// Item selected event handler for list box in items display area
+        /// OrderItem selected event handler for list box in items display area
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -257,16 +312,16 @@ namespace shoppingCartLib
             var listBoxItem = sender as ListBoxItem;
             if (listBoxItem == null) return;
 
-            // Get the selected item
-            Item item = (Item)listBoxItem.DataContext;
+            // Get the selected orderItem
+            OrderItem orderItem = (OrderItem)listBoxItem.DataContext;
 
-            // Select the coresponding item in order area
-            ListBox_ItemsInOrder.SelectedItem = item;
+            // Select the coresponding orderItem in order area
+            ListBox_ItemsInOrder.SelectedItem = orderItem;
 
-            // Scroll to this item 
-            ListBox_ItemsInOrder.ScrollIntoView(item);
-            ListBox_DisplayItems.ScrollIntoView(item);
-            ListBox_DisplayItems.SelectedItem = item;
+            // Scroll to this orderItem 
+            ListBox_ItemsInOrder.ScrollIntoView(orderItem);
+            ListBox_DisplayItems.ScrollIntoView(orderItem);
+            ListBox_DisplayItems.SelectedItem = orderItem;
         }
 
         /// <summary>
@@ -281,11 +336,11 @@ namespace shoppingCartLib
             var border = sender as Border;
             if (border == null) return;
 
-            // Get the selected item
-            Item item = (Item)border.DataContext;
+            // Get the selected orderItem
+            OrderItem orderItem = (OrderItem)border.DataContext;
 
             // Increase the quantity by one and update the datacontext of the order display details
-            order.IncrementQuantityByOne(item);
+            order.IncrementQuantityByOne(orderItem);
             grid_OrderDetails.DataContext = null;
             grid_OrderDetails.DataContext = order;
         }
@@ -302,11 +357,11 @@ namespace shoppingCartLib
             var border = sender as Border;
             if (border == null) return;
 
-            // Get the selected item
-            Item item = (Item)border.DataContext;
+            // Get the selected orderItem
+            OrderItem orderItem = (OrderItem)border.DataContext;
 
             // Decrease the quantity by one and update the datacontext of the order display area
-            order.DecrementQuantityByOne(item);
+            order.DecrementQuantityByOne(orderItem);
             grid_OrderDetails.DataContext = null;
             grid_OrderDetails.DataContext = order;
         }
@@ -321,17 +376,17 @@ namespace shoppingCartLib
         {
             if (order == null) return;
 
-            // Get the selected item in shopping cart
-            Item selectedItem = ListBox_ItemsInOrder.SelectedItem as Item;
+            // Get the selected orderItem in shopping cart
+            OrderItem selectedOrderItem = ListBox_ItemsInOrder.SelectedItem as OrderItem;
 
-            // Remove this item from order object and update the datacontext of the order display details
-            order.RemoveItem(selectedItem);
+            // Remove this orderItem from order object and update the datacontext of the order display details
+            order.RemoveItem(selectedOrderItem);
             grid_OrderDetails.DataContext = null;
             grid_OrderDetails.DataContext = order;
         }
 
         /// <summary>
-        /// Item selected event handler for list box in category area
+        /// OrderItem selected event handler for list box in category area
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -340,13 +395,13 @@ namespace shoppingCartLib
             var listBoxItem = sender as ListBoxItem;
             if (listBoxItem == null) return;
 
-            // Get the selected item
-            Item itemSelected = (Item)listBoxItem.DataContext;
+            // Get the selected orderItem
+            OrderItem orderItemSelected = (OrderItem)listBoxItem.DataContext;
 
             // Search the database for items which match the category selected
-            var linqResut = listInputItems.Where(i => i.Category.Equals(itemSelected.Category));
+            var linqResut = listInputItems.Where(i => i.Category.Equals(orderItemSelected.Category));
 
-            // Clear the items already in the item display area
+            // Clear the items already in the orderItem display area
             collectionDisplayItems.Clear();
             linqResut.ToList().ForEach(item => collectionDisplayItems.Add(item));
         }
@@ -412,8 +467,8 @@ namespace shoppingCartLib
             // Set msg box title and content
             txtBlock_MsgBox_Title.Text = "COUPON";
             Grid_MsgBox.Tag = "COUPON";
-            txtBlock_MsgBox_Content.Text = order.Coupon?.ToString() ?? "No coupon found.";
-
+            txtBlock_MsgBox_Content.Text = order.Coupon!=null ? ValidateCoupon(order.Coupon) : "No coupon found.";
+            
             // Set msg box visible
             Grid_MsgBox.Visibility = Visibility.Visible;
         }

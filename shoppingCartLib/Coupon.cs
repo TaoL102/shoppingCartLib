@@ -51,7 +51,7 @@ namespace shoppingCartLib
                 DateTime dateToday = DateTime.Now;
 
                 // Check if current date is between start date and end date
-                _isValid = (dateToday.Ticks > StartDate.Ticks ) && ( dateToday.Ticks < EndDate.Ticks);
+                _isValid = (dateToday.Ticks > StartDate.Ticks) && (dateToday.Ticks < EndDate.Ticks);
 
                 return _isValid;
             }
@@ -90,35 +90,11 @@ namespace shoppingCartLib
         {
             StringBuilder sb = new StringBuilder();
 
-            // Generate vadility info
-            // Invalid:
-            if (!IsValid)
-            {
-                sb.AppendLine("Coupon Code: " + Code);
-                sb.AppendLine("Start Date: " + StartDate);
-                sb.AppendLine("Start Date: " + EndDate);
-                sb.AppendLine("It's invalid now!");
-            }
+            sb.AppendLine("Discount: " + DiscountPercentage + "%");
+            sb.AppendLine("Coupon Code: " + Code);
+            sb.AppendLine("Start Date: " + StartDate);
+            sb.AppendLine("End Date: " + EndDate);
 
-            // Valid:
-            else
-            {
-                sb.AppendLine("Coupon Code: " + Code);
-
-                // Applicable category
-                if (!string.IsNullOrEmpty(ApplicableCategory))
-                {
-                    sb.AppendLine("Applicable Category:" + ApplicableCategory);
-                    sb.AppendLine("Discount: " + DiscountPercentage + "%");
-                }
-
-                // Applicable items
-                else if (!string.IsNullOrEmpty(ApplicableItemCode))
-                {
-                    sb.AppendLine("Applicable Item:" + ApplicableItemCode);
-                    sb.AppendLine("Discount: " + DiscountPercentage + "%");
-                }
-            }
             return sb.ToString();
         }
         #endregion

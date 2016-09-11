@@ -5,11 +5,11 @@ using System.Globalization;
 namespace shoppingCartLib
 {
     /// <summary>
-    /// This is the Item Model for the control;
+    /// This is the OrderItem Model for the control;
     /// Author: Tao Liu
     /// Date: 21/08/2016
     /// </summary>
-    public class Item : Comparer<Item>, INotifyPropertyChanged
+    public class OrderItem : Comparer<OrderItem>, INotifyPropertyChanged
     {
 
         #region Fields
@@ -139,13 +139,13 @@ namespace shoppingCartLib
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="id">Item ID</param>
-        /// <param name="name">Item name</param>
-        /// <param name="uniPrice">Item unit price</param>
-        /// <param name="taxPercentage">Item tax percentage</param>
-        /// <param name="category">Item category</param>
+        /// <param name="id">OrderItem ID</param>
+        /// <param name="name">OrderItem name</param>
+        /// <param name="uniPrice">OrderItem unit price</param>
+        /// <param name="taxPercentage">OrderItem tax percentage</param>
+        /// <param name="category">OrderItem category</param>
         /// <param name="picUrl">Picture Url</param>
-        public Item(string id, string name, double uniPrice, double taxPercentage, string category, string picUrl)
+        public OrderItem(string id, string name, double uniPrice, double taxPercentage, string category, string picUrl)
         {
             this.Id = id;
             this.Name = name;
@@ -178,7 +178,7 @@ namespace shoppingCartLib
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public override int Compare(Item x, Item y)
+        public override int Compare(OrderItem x, OrderItem y)
         {
             return x.Id.CompareTo(y.Id);
         }
